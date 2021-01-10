@@ -53,4 +53,4 @@ AM_CPPFLAGS += -DGOT_VERSION='"@VERSION@"' \
 	-I$(top_srcdir)/include \
 	-I.
 
-LDADD = -L$(top_builddir)/compat -lopenbsd-compat -lutil -lpanel -lncursesw -lpthread
+LDADD = -L$(top_builddir)/compat -lopenbsd-compat -lpthread
