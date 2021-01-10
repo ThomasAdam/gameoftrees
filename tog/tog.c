@@ -14,15 +14,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <sys/queue.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 
 #include <ctype.h>
 #include <errno.h>
-#define _XOPEN_SOURCE_EXTENDED
 #include <curses.h>
-#undef _XOPEN_SOURCE_EXTENDED
 #include <panel.h>
 #include <locale.h>
 #include <signal.h>
@@ -40,6 +37,8 @@
 #include <libgen.h>
 #include <regex.h>
 
+#include "got_compat.h"
+
 #include "got_version.h"
 #include "got_error.h"
 #include "got_object.h"
@@ -54,6 +53,9 @@
 #include "got_privsep.h"
 #include "got_path.h"
 #include "got_worktree.h"
+
+//#define update_panels() (0)
+//#define doupdate() (0)
 
 #ifndef MIN
 #define	MIN(_a,_b) ((_a) < (_b) ? (_a) : (_b))
@@ -1724,6 +1726,8 @@ draw_commits(struct tog_view *view)
 	}
 
 	view_vborder(view);
+	update_panels();
+	doupdate();
 done:
 	free(id_str);
 	free(refs_str);
@@ -2104,7 +2108,7 @@ stop_log_thread(struct tog_log_view_state *s)
 		if (errcode)
 			return got_error_set_errno(errcode,
 			    "pthread_mutex_lock");
-		s->thread = NULL;
+		s->thread = 0; //NULL;
 	}
 
 	if (s->thread_args.repo) {
@@ -2372,7 +2376,7 @@ show_log_view(struct tog_view *view)
 	const struct got_error *err;
 	struct tog_log_view_state *s = &view->state.log;
 
-	if (s->thread == NULL) {
+	if (s->thread == 0) { //NULL) {
 		int errcode = pthread_create(&s->thread, NULL, log_thread,
 		    &s->thread_args);
 		if (errcode)
@@ -4156,7 +4160,7 @@ stop_blame(struct tog_blame *blame)
 			    "pthread_mutex_lock");
 		if (err && err->code == GOT_ERR_ITER_COMPLETED)
 			err = NULL;
-		blame->thread = NULL;
+		blame->thread = 0; //NULL;
 	}
 	if (blame->thread_args.repo) {
 		got_repo_close(blame->thread_args.repo);
@@ -4438,7 +4442,7 @@ show_blame_view(struct tog_view *view)
 	struct tog_blame_view_state *s = &view->state.blame;
 	int errcode;
 
-	if (s->blame.thread == NULL) {
+	if (s->blame.thread == 0) { //NULL) {
 		errcode = pthread_create(&s->blame.thread, NULL, blame_thread,
 		    &s->blame.thread_args);
 		if (errcode)
